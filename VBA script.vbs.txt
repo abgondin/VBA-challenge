@@ -1,0 +1,184 @@
+' Part I:
+
+'Create a script that will loop through all the stocks for one year and output the following information.
+
+' 1. Extract Ticker Symbol and paste it into the Summary Table.
+' 2. Store variables for first open price and last close price of the year for each Ticker Symbol.
+' 3. Calculate the Yearly Change with the stored OpenPrince and ClosePrice.
+' 4. Add Yearly Change to Summary Table and conditional formatting for negative change in red and positive in green.
+' 5. Calculate the percentage of change, display in Summary Table and convert the cells to percentage format.
+' 6. Add up the total stock volume and display in Summary Table.
+
+Sub WallStreet()
+
+  ' --------------------------------------------
+    ' LOOP THROUGH ALL SHEETS
+    ' --------------------------------------------
+    For Each ws In ThisWorkbook.Worksheets
+
+        ' Initialise variables
+        Dim Ticker_Name As String
+        Dim OpenPrice As Double
+        Dim ClosePrice As Double
+        Dim YearlyChange As Double
+        Dim PercentageChange As Double
+        
+        ' Add Headers for new columns
+        ws.Cells(1, 9).Value = "Ticker Symbol"
+        ws.Cells(1, 10).Value = "Yearly Change"
+        ws.Cells(1, 11).Value = "Percentage Change"
+        ws.Cells(1, 12).Value = "Stock Volume"
+        
+        ' Set OpenPrice
+        OpenPrice = ws.Cells(2, 3).Value
+        
+        ' Set an initial variable for holding the Stock Volume per Ticker
+        Stock_Volume = 0
+        
+        'Keep track of the location of each ticker in the summary table
+        Dim Summary_Table_Row As Integer
+        Summary_Table_Row = 2
+        
+        'Counts the number of rows
+        lastRow = ws.Cells(Rows.Count, 1).End(xlUp).Row
+        
+        'Loop through each row
+        
+        For i = 2 To lastRow
+        
+        
+          ' If the cell immediately following a row is the same ticker...
+            If ws.Cells(i, 1).Value = ws.Cells(i + 1, 1).Value Then
+        
+              ' Add to the Volume of Stock
+              Stock_Volume = Stock_Volume + ws.Cells(i, 7).Value
+            
+            'Identify if there is a change in ticker name
+            ElseIf ws.Cells(i, 1).Value <> ws.Cells(i + 1, 1).Value Then
+            
+            'Set the Ticker Name
+            Ticker_Name = ws.Cells(i, 1).Value
+            
+            'Print the Ticker Name in the Summary Table
+            ws.Range("I" & Summary_Table_Row).Value = Ticker_Name
+            
+          ' Print the OpenPrice to the Summary Table
+            'ws.Range("M" & Summary_Table_Row).Value = OpenPrice
+            
+            ' Set ClosePrice
+              ClosePrice = ws.Cells(i, 6).Value
+              
+              ' Print the ClosePrice to the Summary Table
+            'ws.Range("N" & Summary_Table_Row).Value = ClosePrice
+            
+            ' Calculate yearly change
+              YearlyChange = ClosePrice - OpenPrice
+              
+            ' Print the Yearly Change to the Summary Table
+            ws.Range("J" & Summary_Table_Row).Value = YearlyChange
+            
+                ' Conditional Formatting for Yearly Change
+                If YearlyChange < 0 Then
+                ws.Range("J" & Summary_Table_Row).Interior.Color = vbRed
+                Else
+                ws.Range("J" & Summary_Table_Row).Interior.Color = vbGreen
+                End If
+            
+            ' Calculate Percentage Change
+             If OpenPrice <> 0 Then
+            PercentageChange = YearlyChange / OpenPrice
+            End If
+              
+              ' Print the Percentage Change to the Summary Table
+            ws.Range("K" & Summary_Table_Row).Value = PercentageChange
+            
+                ' Formatting of Percentage Change to percentage
+            ws.Range("K" & Summary_Table_Row).NumberFormat = "0.00%"
+              
+               ' Set OpenPrice
+              OpenPrice = ws.Cells(i + 1, 3).Value
+            
+             ' Add to the Stock Volume
+              Stock_Volume = Stock_Volume + ws.Cells(i, 7).Value
+              
+              ' Print the Stock Volume to the Summary Table
+            ws.Range("L" & Summary_Table_Row).Value = Stock_Volume
+            
+            'Add one to the summary table row
+            Summary_Table_Row = Summary_Table_Row + 1
+            
+            ' Reset the Stock Volume
+              Stock_Volume = 0
+            
+            End If
+        
+        Next i
+
+    Next ws
+    
+        ' Challenge:
+
+'Add to the previous VBA script so that it runs on every worksheet, i.e., every year, just by running the VBA script once.
+'And Returns:
+' 1. The stock with the "Greatest % increase"
+' 2. The stock with the "Greatest % decrease"
+' 3. The stock with the "Greatest total volume"
+
+    ' --------------------------------------------
+    ' LOOP THROUGH ALL SHEETS
+    ' --------------------------------------------
+    For Each ws In Worksheets
+    
+    GreatestIncreaseValue = ws.Cells(2, 11).Value
+    GreatestDecreaseValue = ws.Cells(2, 11).Value
+    GreatestVolume = 0
+    
+    'Counts the number of rows
+        lastRowSummary = ws.Cells(Rows.Count, 11).End(xlUp).Row
+
+        ' Add Headers for new columns and Rows
+        ws.Cells(1, 15).Value = "Ticker"
+        ws.Cells(1, 16).Value = "Value"
+        ws.Cells(2, 14).Value = "Greatest % Increase"
+        ws.Cells(3, 14).Value = "Greatest % Decrease"
+        ws.Cells(4, 14).Value = "Greatest Total Volume"
+        
+         ' Loop to find the Greatest % Increase
+        
+        For i = 2 To lastRowSummary
+        
+            'Identify if the current row is greater than GreatestIncreaseValue
+        If ws.Cells(i, 11).Value > GreatestIncreaseValue Then
+            GreatestIncreaseValue = ws.Cells(i, 11).Value
+            GreatestIncreaseTicker = ws.Cells(i, 9).Value
+        End If
+        
+        If ws.Cells(i, 11).Value < GreatestDecreaseValue Then
+            GreatestDecreaseValue = ws.Cells(i, 11).Value
+            GreatestDecreaseTicker = ws.Cells(i, 9).Value
+        End If
+        
+        If ws.Cells(i, 12).Value > GreatestVolume Then
+            GreatestVolume = ws.Cells(i, 12).Value
+            GreatestVolumeTicker = ws.Cells(i, 9).Value
+        End If
+            
+        Next i
+        
+  'Print the Ticker and Value of stock with Greatest increase in the Summary Table
+            ws.Cells(2, 15).Value = GreatestIncreaseTicker
+            ws.Cells(2, 16).Value = GreatestIncreaseValue
+            ws.Cells(2, 16).NumberFormat = "0.00%"
+            ws.Cells(3, 15).Value = GreatestDecreaseTicker
+            ws.Cells(3, 16).Value = GreatestDecreaseValue
+            ws.Cells(3, 16).NumberFormat = "0.00%"
+            ws.Cells(4, 15).Value = GreatestVolumeTicker
+            ws.Cells(4, 16).Value = GreatestVolume
+            
+     ' Autofit to display data
+    ws.Columns("A:P").AutoFit
+            
+    Next ws
+    
+End Sub
+
