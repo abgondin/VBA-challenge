@@ -17,7 +17,7 @@ VBA scripting | loops | conditional formatting
 
 The alphabetical_testing.xlsx file was used for testing while generating the script. This data set is smaller and allowed me to test faster.
 
-I then applied the script to Multiple_year_stock_data.xlsx to analyse all stocks traded each year from 2014-2016.
+I then applied the script to Multiple_year_stock_data.xlsx to analyse all stocks traded each year from 2014-2016. Multiple_year_stock_data.xlsx contains a worksheet for each year and ~800K rows each worksheet.
 
 In 2014, the stock that returned the most value was DM (5581% increase) and the most traded stock was BAC.
 <img width="1136" alt="Screen Shot 2021-02-15 at 3 45 21 pm" src="https://user-images.githubusercontent.com/77761497/174531654-ff231a9e-809e-4a6d-8b93-a11c61c8c15c.png">
